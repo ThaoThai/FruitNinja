@@ -104,42 +104,24 @@ local delay =math.random(2000, 5000)
 
 timer.performWithDelay( delay, spawnBomb, 0)
 
---local function showImage(image,x,y)
---    local image = display.newImageRect(image,120,120)
---    image.x = x
---    image.y = y
---    local fadeTransition = transition.to( image, { time=1000, alpha=0.0,
---    onComplete=function( object )
---       display.remove(image)
---    end
---})
---end
---
---local function changeImage(veggiewhole) 
---    local x, y = veggiewhole:localToContent(0,0)
---    timer.performWithDelay( 0, showImage("images/poof-1.png",x,y), 0)
---    timer.performWithDelay( 4000, showImage("images/poof-2.png",x,y), 0)
-----    timer.performWithDelay( 20000, showImage("images/poof-3.png",x,y), 0)
---end 
-    
+
 
 local function startGame()
+    
     local leftWall = display.newRect (0, 0, 1, display.contentHeight);
     leftWall.anchorX=0.0;
     leftWall.anchorY=0.0;
     local rightWall = display.newRect (display.contentWidth, 0, 1, display.contentHeight);
     rightWall.anchorX=1.0;
     rightWall.anchorY=0.0;
-    local topWall = display.newRect (0, 0, display.contentWidth, 1)   
-    topWall.anchorX=0.0;
-    topWall.anchorY=1.0;
-
+    local ceiling = display.newRect (0, 0, display.contentWidth, 1);
+    ceiling.anchorX=0.0;
+    ceiling.anchorY=0.0;
     -- Add physics to the walls. They will not move so they will be "static"
     physics.addBody (leftWall, "static",  { bounce = 0.1 } );
     physics.addBody (rightWall, "static", { bounce = 0.1 } );
-    physics.addBody (topWall, "static", { bounce = 0.1} );
+    physics.addBody (ceiling, "static",   { bounce = 0.1 } );
     
-
     local tomato = {}
 	tomato.whole = "images/tomato.png"
 	tomato.cut = "images/cut-tomato-01.png"
@@ -176,8 +158,72 @@ local function startGame()
 	local minAngularVelocity = getRandomValue(minAngularVelocity, maxAngularVelocity)
 	local direction = (math.random() < .5) and -1 or 1
 	minAngularVelocity = minAngularVelocity * direction
+    
 
-        
+    ---------------------------------------------------------------------------
+	-- 1pixel rect that will be the colliding object for slashing --
+	---------------------------------------------------------------------------
+	local touchrect = display.newRect(-1, -1, 1, 1)
+	physics.addBody( touchrect, {isSensor = true} )
+	touchrect.isBullet = true
+	touchrect:setFillColor(0, 0, 0, 0)
+
+    local touchEnd = 0
+    
+    local function moveRect()
+
+	touchrect.x = -100
+	touchrect.y = -100
+
+	physics.setGravity( 0, 0 )
+
+	fruit.x=display.contentWidth/2
+	fruit.y=display.contentHeight/2+fruit.height*2
+
+	transition.to(fruit, {time = 200, alpha = 1})
+
+    end
+    
+    ---------------------------------------------------------------------------
+-- function and values for drawing slashing line --
+---------------------------------------------------------------------------
+
+local maxPoints = 5
+local lineThickness = 7
+local endPoints = {}
+
+local function movePoint(event)
+
+	touchrect.x = event.x
+	touchrect.y = event.y
+
+	        -- Insert a new point into the front of the array
+        table.insert(endPoints, 1, {x = event.x, y = event.y, line= nil}) 
+ 
+        -- Remove any excessed points
+        if(#endPoints > maxPoints) then 
+                table.remove(endPoints)
+        end
+ 
+        for i,v in ipairs(endPoints) do
+                local line = display.newLine(v.x, v.y, event.x, event.y)
+      		  line.strokeWidth = lineThickness
+                transition.to(line, { alpha = 0, strokeWidth = 0, onComplete = function(event) line:removeSelf() end})                
+        end
+ 
+	if event.phase == "ended" then
+		touchEnd = 1
+		while(#endPoints > 0) do
+			table.remove(endPoints)
+		end
+
+	elseif event.phase == "began" then
+		touchEnd = 0
+	end
+
+end
+Runtime:addEventListener("touch", movePoint)   
+    
     
     function startDrag(event)
         local swipeLength = math.abs(event.x - event.xStart) 
