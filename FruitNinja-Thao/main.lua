@@ -42,6 +42,9 @@ local minAngularVelocity = 100
 local maxAngularVelocity = 200
 
 local timeInterval = 1000
+local explosion = audio.loadSound("explosion.wav")
+local chopped1 = audio.loadSound("chopped1.wav")
+local music = audio.loadStream("music.mp3");
 
 local gushProp = {density = 1.0, friction = 0.3, bounce = 0.2, filter = {categoryBits = 4, maskBits = 8} } 
 
@@ -61,6 +64,7 @@ local function blackscreen(bomb,Gamegroup)
 	back:setFillColor(0,0,0, 255 * .1)
     group:insert(back)
     local explode = display.newImageRect("images/explode.png",520,470)
+    audio.play(explosion)
     group:insert(explode)
     explode.x = display.contentWidth/2
     explode.y = display.contentHeight/3 + 50
@@ -120,6 +124,7 @@ bombTimer = timer.performWithDelay( delay, spawnBomb, 0)
 
 
 function startGame()
+    audio.play(music, {loops =- 1});
     Gamegroup = display.newGroup()
     local leftWall = display.newRect (0, 0, 1, display.contentHeight);
     leftWall.anchorX=0.0;
@@ -157,6 +162,7 @@ function startGame()
     
 	physics.addBody(veggiewhole,"dynamic",{density = 1.0, friction = 0.3, bounce = 0.2, filter = {categoryBits = 2, maskBits = 1}})
     physics.addBody(veggiecut,"dynamic",{density = 1.0, friction = 0.3, bounce = 0.2, filter = {categoryBits = 2, maskBits = 1}})
+
 --    physics.addBody(bomb,"dynamic",{density = 1.0, friction = 0.3, bounce = 0.2, filter = {categoryBits = 2, maskBits = 1}})
     poof.isVisible=false;
     veggiecut.isVisible=false;
@@ -246,13 +252,14 @@ Runtime:addEventListener("touch", movePoint)
         print(event.phase, swipeLength)
         local t = event.target
         local phase = event.phase
-        if phase == "began" then
+        if phase == "began" then            
             return true
         elseif "moved" == phase then
             if swipeLength > 10 then
                 veggiecut.isVisible=true
+                audio.play(chopped1)
                 veggiewhole.isVisible=false
-                local splash = display.newImageRect("images/splash.png",140,140)
+                local splash = display.newImageRect("images/splash.png",140,140)                
                 local xAbsPos, yAbsPos = veggiewhole:localToContent(0,0)
                 veggiewhole:toFront()
                 veggiecut:toFront()
@@ -264,6 +271,7 @@ Runtime:addEventListener("touch", movePoint)
                 local fadeTransition = transition.to( splash, { time=3000, alpha=0.0,
                     onComplete=function( object )
                        display.remove(splash)
+
             end
 })
             else
