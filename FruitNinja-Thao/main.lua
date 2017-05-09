@@ -28,12 +28,12 @@ local totalFruits = {}
 local score =0
 local lastScore=0
 local keeping_score = true
-local PointName = display.newText("Points: ", halfW+145,170)
-local scoreText = display.newText(score, halfW+200,170)
-local highScore = display.newText("High Score: ", halfW+350,170)
-local highScoreText = display.newText(lastScore, halfW+430,170)
+local PointName = display.newText("POINT:  ", halfW+145,140)
+local scoreText = display.newText(score, halfW+200,140)
+local highScore = display.newText("HIGH SCORE:      ", halfW+350,140)
+local highScoreText = display.newText(lastScore, halfW+430,140)
 
-
+local Gamegroup;
 
 
 local veggieTimer
@@ -41,10 +41,10 @@ local bombTimer
 
 local delay =math.random(2000, 5000)
 
-local minGushVelocityX = -350
-local maxGushVelocityX = 350
-local minGushVelocityY = -350
-local maxGushVelocityY = 350
+local minGushVelocityX = -550
+local maxGushVelocityX = 550
+local minGushVelocityY = -550
+local maxGushVelocityY = 550
 
 local minVelocityY = 850
 local maxVelocityY = 1100
@@ -64,7 +64,6 @@ local gushProp = {density = 1.0, friction = 0.3, bounce = 0.2, filter = {categor
 
 
 
-local Gamegroup
 
 local function blackscreen(bomb,Gamegroup)
     local group = display.newGroup()
@@ -74,18 +73,22 @@ local function blackscreen(bomb,Gamegroup)
     gameOver=true
     local x, y = bomb:localToContent(0,0)
     background.isVisible=false
-    local back = display.newRect( 0,0, display.contentWidth, display.contentHeight )
+    local back = display.newRect( 0,0, 2048, 2048 )
 	back:setFillColor(0,0,0, 255 * .1)
     group:insert(back)
-    local explode = display.newImageRect("images/explode.png",520,470)
+    local explode = display.newImageRect("images/explode.png",500,320)
     audio.play(explosion)
     group:insert(explode)
+    local yourscoreText = display.newText("YOUR SCORE IS:  ", halfW, explode.y + explode.height / 2 + 340)
+    local yourscore = display.newText(score, halfW+150, explode.y + explode.height / 2 +340)
+    group:insert(yourscoreText)
+    group:insert(yourscore)
     explode.x = display.contentWidth/2
     explode.y = display.contentHeight/3 + 50
-    local replayButton = display.newImage("images/replayButton.png")
+    local replayButton = display.newImageRect("images/replayButton.png",150,50)
 	group:insert(replayButton)
 	replayButton.x = display.contentWidth / 2
-	replayButton.y = explode.y + explode.height / 2 + replayButton.height / 2    
+	replayButton.y = explode.y + explode.height / 2 + replayButton.height / 2 + 120  
     function replayButton:tap (event)                        
         group:removeSelf()
         background.isVisible=true        
@@ -94,9 +97,10 @@ local function blackscreen(bomb,Gamegroup)
         startGame()
         veggieTimer = timer.performWithDelay(timeInterval, startGame,0)
         bombTimer = timer.performWithDelay( delay, spawnBomb, 0)
+        score=0
+        scoreText.text=score
         print("tap tap")
     end
-    replayButton:addEventListener("tap",replayButton)
     if lastScore<score then
     lastScore=score 
     highScoreText.text=lastScore
@@ -104,8 +108,8 @@ local function blackscreen(bomb,Gamegroup)
     lastScore=lastScore
     highScoreText.text=lastScore
     end      
-    score=0
-    scoreText.text=score
+    replayButton:addEventListener("tap",replayButton)
+
 
 end
 
@@ -167,34 +171,43 @@ function startGame()
     
     local tomato = {}
 	tomato.whole = "images/tomato.png"
-	tomato.cut = "images/cut-tomato-01.png"
+	tomato.cut = "images/cut-tomato.png"
     local pepper ={}
-    pepper.whole = "images/pepper.png"
-	pepper.cut="images/cut-pepper-01.png"
-    local poof=display.newImageRect("images/poof.png",120,120)
+    pepper.whole = "images/gpepper.png"
+	pepper.cut="images/cut-gpepper.png"
+    
+    local red ={}
+    red.whole = "images/rpepper.png"
+	red.cut="images/cut-rpepper.png"
+    
+    
 	table.insert(totalFruits,tomato)
 	table.insert(totalFruits,pepper)
+    table.insert(totalFruits,red)
 	local veggieProp = totalFruits[math.random(1, #totalFruits)]
-	local veggiewhole = display.newImageRect(veggieProp.whole,120,120)
-    local veggiecut = display.newImageRect(veggieProp.cut,220,165)
+    local veggiewhole
+    local veggiecut
+    if (veggieProp == cucumber) then
+        veggiewhole = display.newImageRect(veggieProp.whole,180,80)
+        veggiecut = display.newImageRect(veggieProp.cut,180,80)   
+        
+    else 
+        veggiewhole = display.newImageRect(veggieProp.whole,120,120)
+        veggiecut = display.newImageRect(veggieProp.cut,120,120)
+    end 
 	veggiewhole.x=display.contentWidth/2
 	veggiewhole.y=display.contentHeight/0.8+veggiewhole.height*0.5
     veggiecut.x=display.contentWidth/2
 	veggiecut.y=display.contentHeight/0.8+veggiecut.height*0.5
 
---    bomb.x=display.contentWidth/2
---	bomb.y=display.contentHeight/0.8+poof.height*0.5
+
     
 	physics.addBody(veggiewhole,"dynamic",{density = 1.0, friction = 0.3, bounce = 0.2, filter = {categoryBits = 2, maskBits = 1}})
     physics.addBody(veggiecut,"dynamic",{density = 1.0, friction = 0.3, bounce = 0.2, filter = {categoryBits = 2, maskBits = 1}})
 
---    physics.addBody(bomb,"dynamic",{density = 1.0, friction = 0.3, bounce = 0.2, filter = {categoryBits = 2, maskBits = 1}})
-    poof.isVisible=false;
     veggiecut.isVisible=false;
-    Gamegroup:insert(poof)
     Gamegroup:insert(veggiewhole)
     Gamegroup:insert(veggiecut)
-
 
 	-- Apply linear velocity
 	local yVelocity = getRandomValue(minVelocityY, maxVelocityY) * -1 -- Need to multiply by -1 so the veggie shoots up
@@ -274,27 +287,33 @@ Runtime:addEventListener("touch", movePoint)
     
     
     function startDrag(event)
-        local swipeLength = math.abs(event.x - event.xStart) 
+        local swipeLength = event.x - event.xStart
+        local vegVelX, vegVelY = veggiewhole:getLinearVelocity()
         print(event.phase, swipeLength)
         local t = event.target
         local phase = event.phase
+        local velocity = math.sqrt(math.pow(vegVelX, 2) + math.pow(vegVelY, 2))
+        local xDirection = swipeLength < 0 and -1 or 1
         if phase == "began" then            
             return true
-        elseif "moved" == phase then
-            if swipeLength > 10 then
+        else if "moved" == phase then
+            if math.abs(swipeLength) > 10 then
                 veggiecut.isVisible=true
+                local velocityX = math.cos( (math.pi /  180)) * velocity * xDirection
+	            local velocityY = math.sin((math.pi /  180)) * velocity
+                veggiecut:setLinearVelocity(velocityX, velocityY)
                 audio.play(chopped1)
                 if keeping_score then
                     score = score + 1                                
                     scoreText.text =score
                 end
                 veggiewhole.isVisible=false
-                local splash = display.newImageRect("images/splash.png",140,140)                
+                local splash = display.newImageRect("images/splash.png",140,140) 
                 local xAbsPos, yAbsPos = veggiewhole:localToContent(0,0)
                 veggiewhole:toFront()
                 veggiecut:toFront()
                 createGush(veggiewhole)
-
+                
                 splash.x = xAbsPos
                 splash.y = yAbsPos
                 splash.apha=0.5
@@ -308,9 +327,7 @@ Runtime:addEventListener("touch", movePoint)
                 print("Shorter than 5")
             end
         elseif "ended" == phase or "cancelled" == phase then
-            if event.xStart > event.x and swipeLength > 50 then 
-
-            elseif event.xStart < event.x and swipeLength > 50 then 
+                return true 
 
             end 
         end
@@ -319,8 +336,8 @@ Runtime:addEventListener("touch", movePoint)
 veggiewhole:addEventListener("touch",startDrag)
 
 local numGush =10
-local minRadius =5
-local maxRadius=50
+local minRadius =15
+local maxRadius=60
     
 function createGush(veggiewhole)
 
@@ -330,14 +347,14 @@ function createGush(veggiewhole)
 		gush:setFillColor(255, 0, 0, 255)
 		gushProp.radius = gush.width / 2
 		physics.addBody(gush, "dynamic", gushProp)
-
+        
 		local xVelocity = math.random(minGushVelocityX, maxGushVelocityX)
 		local yVelocity = math.random(minGushVelocityY, maxGushVelocityY)
 
 		gush:setLinearVelocity(xVelocity, yVelocity)
-		gush:toFront()
+        gush:toFront()
 		transition.to(gush, {time = gushFadeTime, delay = gushFadeDelay, width = 0, height = 0, alpha = 0, onComplete = function(event) gush:removeSelf() gush=nil end})		
-
+            
 	end
 
 end
