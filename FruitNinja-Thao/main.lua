@@ -10,17 +10,31 @@ display.setStatusBar( display.HiddenStatusBar )
 local physics=require ("physics")
 
 physics.start()
-physics.setGravity( 0, 9.8 * 2)
-
+physics.setGravity( 0, 9.8 * 2) 
 
 
 -- Display a background image
 local background = display.newImageRect("images/background.png",1024, 1024);
 
+
 background.anchorX=0;
 background.anchorY=0;
 
+halfW = display.contentWidth * 0.5
+halfH = display.contentHeight * 0.5
+
+
 local totalFruits = {}
+local score =0
+local lastScore=0
+local keeping_score = true
+local PointName = display.newText("Points: ", halfW+145,170)
+local scoreText = display.newText(score, halfW+200,170)
+local highScore = display.newText("High Score: ", halfW+350,170)
+local highScoreText = display.newText(lastScore, halfW+430,170)
+
+
+
 
 local veggieTimer
 local bombTimer
@@ -71,18 +85,29 @@ local function blackscreen(bomb,Gamegroup)
     local replayButton = display.newImage("images/replayButton.png")
 	group:insert(replayButton)
 	replayButton.x = display.contentWidth / 2
-	replayButton.y = explode.y + explode.height / 2 + replayButton.height / 2
-    function replayButton:tap (event)
+	replayButton.y = explode.y + explode.height / 2 + replayButton.height / 2    
+    function replayButton:tap (event)                        
         group:removeSelf()
-        background.isVisible=true
+        background.isVisible=true        
+        -- local scoreText = display.newText(score, halfW+300,170)
+        -- restartStopScore()
         startGame()
         veggieTimer = timer.performWithDelay(timeInterval, startGame,0)
         bombTimer = timer.performWithDelay( delay, spawnBomb, 0)
         print("tap tap")
     end
     replayButton:addEventListener("tap",replayButton)
-end
+    if lastScore<score then
+    lastScore=score 
+    highScoreText.text=lastScore
+    else
+    lastScore=lastScore
+    highScoreText.text=lastScore
+    end      
+    score=0
+    scoreText.text=score
 
+end
 
 function spawnBomb()
     local bomb = display.newImageRect("images/bomb.png",130,130)
@@ -113,7 +138,7 @@ function spawnBomb()
             else        
                 print("Shorter than 5")
             end
-        elseif "ended" == phase then
+        elseif "ended" == phase then        
         end
     end
     bomb:addEventListener("touch",gameover)
@@ -123,7 +148,7 @@ bombTimer = timer.performWithDelay( delay, spawnBomb, 0)
 
 
 
-function startGame()
+function startGame()    
     audio.play(music, {loops =- 1});
     Gamegroup = display.newGroup()
     local leftWall = display.newRect (0, 0, 1, display.contentHeight);
@@ -169,6 +194,7 @@ function startGame()
     Gamegroup:insert(poof)
     Gamegroup:insert(veggiewhole)
     Gamegroup:insert(veggiecut)
+
 
 	-- Apply linear velocity
 	local yVelocity = getRandomValue(minVelocityY, maxVelocityY) * -1 -- Need to multiply by -1 so the veggie shoots up
@@ -258,6 +284,10 @@ Runtime:addEventListener("touch", movePoint)
             if swipeLength > 10 then
                 veggiecut.isVisible=true
                 audio.play(chopped1)
+                if keeping_score then
+                    score = score + 1                                
+                    scoreText.text =score
+                end
                 veggiewhole.isVisible=false
                 local splash = display.newImageRect("images/splash.png",140,140)                
                 local xAbsPos, yAbsPos = veggiewhole:localToContent(0,0)
@@ -314,6 +344,15 @@ end
 end 
 
 veggieTimer = timer.performWithDelay(timeInterval, startGame,0)
+
+function restartStopScore()
+    keeping_score = true
+    score=0
+        end
+
+ function restartContinueScore()
+    keeping_score = true
+end
  
 -- Return a random value between 'min' and 'max'
 function getRandomValue(min, max)
