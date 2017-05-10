@@ -74,7 +74,7 @@ local function blackscreen(bomb,Gamegroup)
     local x, y = bomb:localToContent(0,0)
     background.isVisible=false
     local back = display.newRect( 0,0, 2048, 2048 )
-	back:setFillColor(0,0,0, 255 * .1)
+    back:setFillColor(0,0,0, 255 * .1)
     group:insert(back)
     local explode = display.newImageRect("images/explode.png",500,320)
     audio.play(explosion)
@@ -86,9 +86,9 @@ local function blackscreen(bomb,Gamegroup)
     explode.x = display.contentWidth/2
     explode.y = display.contentHeight/3 + 50
     local replayButton = display.newImageRect("images/replayButton.png",150,50)
-	group:insert(replayButton)
-	replayButton.x = display.contentWidth / 2
-	replayButton.y = explode.y + explode.height / 2 + replayButton.height / 2 + 120  
+    group:insert(replayButton)
+    replayButton.x = display.contentWidth / 2
+    replayButton.y = explode.y + explode.height / 2 + replayButton.height / 2 + 120  
     function replayButton:tap (event)                        
         group:removeSelf()
         background.isVisible=true        
@@ -117,9 +117,9 @@ function spawnBomb()
     local bomb = display.newImageRect("images/bomb.png",130,130)
     local explode = display.newImageRect("images/explode.png",130,130)
     bomb.x=display.contentWidth/2
-	bomb.y=display.contentHeight/0.8+bomb.height*0.5
+    bomb.y=display.contentHeight/0.8+bomb.height*0.5
     explode.x=display.contentWidth/2
-	explode.y=display.contentHeight/0.8+explode.height*0.5
+    explode.y=display.contentHeight/0.8+explode.height*0.5
     local xbombVelocity=getRandomValue(minVelocityX, maxVelocityX)
     local ybombVelocity= getRandomValue(minVelocityY, maxVelocityY) * -1
     physics.addBody(bomb,"dynamic",{density = 1.0, friction = 0.3, bounce = 0.2, filter = {categoryBits = 2, maskBits = 1}})
@@ -148,7 +148,7 @@ function spawnBomb()
     bomb:addEventListener("touch",gameover)
 end
 
-bombTimer = timer.performWithDelay( delay, spawnBomb, 0)
+-- bombTimer = timer.performWithDelay( delay, spawnBomb, 0)
 
 
 
@@ -170,21 +170,21 @@ function startGame()
     physics.addBody (ceiling, "static",   { bounce = 0.1 } );
     
     local tomato = {}
-	tomato.whole = "images/tomato.png"
-	tomato.cut = "images/cut-tomato.png"
+    tomato.whole = "images/tomato.png"
+    tomato.cut = "images/cut-tomato.png"
     local pepper ={}
     pepper.whole = "images/gpepper.png"
-	pepper.cut="images/cut-gpepper.png"
+    pepper.cut="images/cut-gpepper.png"
     
     local red ={}
     red.whole = "images/rpepper.png"
-	red.cut="images/cut-rpepper.png"
+    red.cut="images/cut-rpepper.png"
     
     
-	table.insert(totalFruits,tomato)
-	table.insert(totalFruits,pepper)
+    table.insert(totalFruits,tomato)
+    table.insert(totalFruits,pepper)
     table.insert(totalFruits,red)
-	local veggieProp = totalFruits[math.random(1, #totalFruits)]
+    local veggieProp = totalFruits[math.random(1, #totalFruits)]
     local veggiewhole
     local veggiecut
     if (veggieProp == cucumber) then
@@ -195,53 +195,53 @@ function startGame()
         veggiewhole = display.newImageRect(veggieProp.whole,120,120)
         veggiecut = display.newImageRect(veggieProp.cut,120,120)
     end 
-	veggiewhole.x=display.contentWidth/2
-	veggiewhole.y=display.contentHeight/0.8+veggiewhole.height*0.5
+    veggiewhole.x=display.contentWidth/2
+    veggiewhole.y=display.contentHeight/0.8+veggiewhole.height*0.5
     veggiecut.x=display.contentWidth/2
-	veggiecut.y=display.contentHeight/0.8+veggiecut.height*0.5
+    veggiecut.y=display.contentHeight/0.8+veggiecut.height*0.5
 
 
     
-	physics.addBody(veggiewhole,"dynamic",{density = 1.0, friction = 0.3, bounce = 0.2, filter = {categoryBits = 2, maskBits = 1}})
+    physics.addBody(veggiewhole,"dynamic",{density = 1.0, friction = 0.3, bounce = 0.2, filter = {categoryBits = 2, maskBits = 1}})
     physics.addBody(veggiecut,"dynamic",{density = 1.0, friction = 0.3, bounce = 0.2, filter = {categoryBits = 2, maskBits = 1}})
 
     veggiecut.isVisible=false;
     Gamegroup:insert(veggiewhole)
     Gamegroup:insert(veggiecut)
 
-	-- Apply linear velocity
-	local yVelocity = getRandomValue(minVelocityY, maxVelocityY) * -1 -- Need to multiply by -1 so the veggie shoots up
+    -- Apply linear velocity
+    local yVelocity = getRandomValue(minVelocityY, maxVelocityY) * -1 -- Need to multiply by -1 so the veggie shoots up
     local ybombVelocity= getRandomValue(minVelocityY, maxVelocityY) * -1
-	local xVelocity = getRandomValue(minVelocityX, maxVelocityX)
+    local xVelocity = getRandomValue(minVelocityX, maxVelocityX)
     local xbombVelocity=getRandomValue(minVelocityX, maxVelocityX)
-	veggiewhole:setLinearVelocity(xVelocity,  yVelocity)
+    veggiewhole:setLinearVelocity(xVelocity,  yVelocity)
     veggiecut:setLinearVelocity(xVelocity,  yVelocity)
-	local minAngularVelocity = getRandomValue(minAngularVelocity, maxAngularVelocity)
-	local direction = (math.random() < .5) and -1 or 1
-	minAngularVelocity = minAngularVelocity * direction
+    local minAngularVelocity = getRandomValue(minAngularVelocity, maxAngularVelocity)
+    local direction = (math.random() < .5) and -1 or 1
+    minAngularVelocity = minAngularVelocity * direction
     
 
     ---------------------------------------------------------------------------
-	-- 1pixel rect that will be the colliding object for slashing --
-	---------------------------------------------------------------------------
-	local touchrect = display.newRect(-1, -1, 1, 1)
-	physics.addBody( touchrect, {isSensor = true} )
-	touchrect.isBullet = true
-	touchrect:setFillColor(0, 0, 0, 0)
+    -- 1pixel rect that will be the colliding object for slashing --
+    ---------------------------------------------------------------------------
+    local touchrect = display.newRect(-1, -1, 1, 1)
+    physics.addBody( touchrect, {isSensor = true} )
+    touchrect.isBullet = true
+    touchrect:setFillColor(0, 0, 0, 0)
 
     local touchEnd = 0
     
     local function moveRect()
 
-	touchrect.x = -100
-	touchrect.y = -100
+    touchrect.x = -100
+    touchrect.y = -100
 
-	physics.setGravity( 0, 0 )
+    physics.setGravity( 0, 0 )
 
-	fruit.x=display.contentWidth/2
-	fruit.y=display.contentHeight/2+fruit.height*2
+    fruit.x=display.contentWidth/2
+    fruit.y=display.contentHeight/2+fruit.height*2
 
-	transition.to(fruit, {time = 200, alpha = 1})
+    transition.to(fruit, {time = 200, alpha = 1})
 
     end
     
@@ -255,10 +255,10 @@ local endPoints = {}
 
 local function movePoint(event)
 
-	touchrect.x = event.x
-	touchrect.y = event.y
+    touchrect.x = event.x
+    touchrect.y = event.y
 
-	        -- Insert a new point into the front of the array
+            -- Insert a new point into the front of the array
         table.insert(endPoints, 1, {x = event.x, y = event.y, line= nil}) 
  
         -- Remove any excessed points
@@ -268,19 +268,19 @@ local function movePoint(event)
  
         for i,v in ipairs(endPoints) do
                 local line = display.newLine(v.x, v.y, event.x, event.y)
-      		  line.strokeWidth = lineThickness
+              line.strokeWidth = lineThickness
                 transition.to(line, { alpha = 0, strokeWidth = 0, onComplete = function(event) line:removeSelf() line=nil end})                
         end
  
-	if event.phase == "ended" then
-		touchEnd = 1
-		while(#endPoints > 0) do
-			table.remove(endPoints)
-		end
+    if event.phase == "ended" then
+        touchEnd = 1
+        while(#endPoints > 0) do
+            table.remove(endPoints)
+        end
 
-	elseif event.phase == "began" then
-		touchEnd = 0
-	end
+    elseif event.phase == "began" then
+        touchEnd = 0
+    end
 
 end
 Runtime:addEventListener("touch", movePoint)   
@@ -300,7 +300,7 @@ Runtime:addEventListener("touch", movePoint)
             if math.abs(swipeLength) > 10 then
                 veggiecut.isVisible=true
                 local velocityX = math.cos( (math.pi /  180)) * velocity * xDirection
-	            local velocityY = math.sin((math.pi /  180)) * velocity
+                local velocityY = math.sin((math.pi /  180)) * velocity
                 veggiecut:setLinearVelocity(velocityX, velocityY)
                 audio.play(chopped1)
                 if keeping_score then
@@ -341,26 +341,50 @@ local maxRadius=60
     
 function createGush(veggiewhole)
 
-	local i
-	for  i = 0, numGush do
-		local gush = display.newCircle( veggiewhole.x, veggiewhole.y, math.random(minRadius, maxRadius) )
-		gush:setFillColor(255, 0, 0, 255)
-		gushProp.radius = gush.width / 2
-		physics.addBody(gush, "dynamic", gushProp)
+    local i
+    for  i = 0, numGush do
+        local gush = display.newCircle( veggiewhole.x, veggiewhole.y, math.random(minRadius, maxRadius) )
+        gush:setFillColor(255, 0, 0, 255)
+        gushProp.radius = gush.width / 2
+        physics.addBody(gush, "dynamic", gushProp)
         
-		local xVelocity = math.random(minGushVelocityX, maxGushVelocityX)
-		local yVelocity = math.random(minGushVelocityY, maxGushVelocityY)
+        local xVelocity = math.random(minGushVelocityX, maxGushVelocityX)
+        local yVelocity = math.random(minGushVelocityY, maxGushVelocityY)
 
-		gush:setLinearVelocity(xVelocity, yVelocity)
+        gush:setLinearVelocity(xVelocity, yVelocity)
         gush:toFront()
-		transition.to(gush, {time = gushFadeTime, delay = gushFadeDelay, width = 0, height = 0, alpha = 0, onComplete = function(event) gush:removeSelf() gush=nil end})		
+        transition.to(gush, {time = gushFadeTime, delay = gushFadeDelay, width = 0, height = 0, alpha = 0, onComplete = function(event) gush:removeSelf() gush=nil end})        
             
-	end
+    end
 
 end
 end 
+local group = display.newGroup()
+    
+    -- Dim the background with a transperent square
+    local back = display.newRect( 0,0, display.contentWidth*2, display.contentHeight*2 )
+    back:setFillColor(0.3, 0.5, 0, 0.5)
+    group:insert(back)
+    
+    local titleLogo = display.newText("Fruit Ninja",0,0,native.systemFont,80)
+    titleLogo.x = display.contentWidth * 0.5
+    titleLogo.y = 225
+    titleLogo:setFillColor( 255, 255, 255)
+    local startButton = display.newImageRect("images/playButton.png",250,108)
+    startButton.x = display.contentWidth / 2
+    startButton.y = display.contentHeight / 2
+    group:insert(startButton)
 
-veggieTimer = timer.performWithDelay(timeInterval, startGame,0)
+    function startButton:tap (event)                        
+        group:removeSelf()
+        titleLogo:removeSelf() 
+        -- titleLogo = nil     
+        -- print("tap tap")
+        veggieTimer = timer.performWithDelay(timeInterval, startGame,0)
+        bombTimer = timer.performWithDelay( delay, spawnBomb, 0)
+    end
+     startButton:addEventListener("tap",startButton) 
+
 
 function restartStopScore()
     keeping_score = true
@@ -370,9 +394,8 @@ function restartStopScore()
  function restartContinueScore()
     keeping_score = true
 end
- 
 -- Return a random value between 'min' and 'max'
 function getRandomValue(min, max)
-	return min + math.abs(((max - min) * math.random()))
+    return min + math.abs(((max - min) * math.random()))
 end
 
